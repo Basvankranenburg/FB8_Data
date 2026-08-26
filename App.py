@@ -151,7 +151,7 @@ with tab_dashboard:
             Sub_Apps=("Starter", lambda x: (x == "Nee").sum()),
             Total_Minutes=("Minutes", "sum"),
             Minuten_aanwezig=("mins_aanwezig", "sum"),
-            Goals=("Goals", "sum"),
+            Goals=("Goals", "sum".0f),
             Assists=("Assist", "sum"),
             Avg_Minutes=("Minutes", "mean"),
         ).reset_index()
