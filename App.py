@@ -122,11 +122,11 @@ with tab_entry:
 # TAB 2: DASHBOARD & ANALYTICS
 # ==========================================
 with tab_dashboard:
-    st.header("📊 Squad Analytics")
+    st.header("Flevo Boys 8 - Data")
     df = load_data()
     
     if df.empty:
-        st.warning("No match data logged yet. Use the Data Entry tab to log your first match!")
+        st.warning("Nog geen wedstrijd data")
     else:
         # Ensure numerical types
         df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce").fillna(0)
@@ -143,12 +143,46 @@ with tab_dashboard:
             Starts=("Starter", lambda x: (x == "Yes").sum()),
             Sub_Apps=("Starter", lambda x: (x == "No").sum()),
             Total_Minutes=("Minutes", "sum"),
+            Minuten_aanwezig=("mins_aanwezig")
             Avg_Minutes=("Minutes", "mean")
         ).reset_index()
+
+        summary = summary.sort_values(by="Minuten_aanwezig", ascending=False)
 
         st.subheader("Speler Summary Table")
         st.dataframe(summary.style.format({"Avg_Minutes": "{:.1f}"}), use_container_width=True)
 
         # Interactive Chart
-        fig = px.bar(summary, x="Speler", y="Total_Minutes", color="Position", title="Total Minutes by Player")
+        import plotly.graph_objects as go
+
+        fig = go.Figure()
+        
+        # Background Bar: Total Minutes Present
+        fig.add_trace(go.Bar(
+            x=summary["Speler"],
+            y=summary["Minuten_aanwezig"],
+            name="Totale Aanwezigheid (Wedstrijdtijd)",
+            marker_color="lightgray",
+            opacity=0.6,
+            width=0.6  # Slightly wider bar for the background
+        ))
+
+        # Foreground Bar: Minutes Played
+        fig.add_trace(go.Bar(
+            x=summary["Speler"],
+            y=summary["Total_Minutes"],
+            name="Gespeelde minuten",
+            marker_color="#2ca02c",  # Green
+            width=0.4  # Slightly narrower bar to fit inside the background bar
+        ))
+
+        # 3. Configure Overlay Layout
+        fig.update_layout(
+            barmode="overlay",
+            title="Speltijd vs. Totale Aanwezigheid per Speler",
+            xaxis_title="Speler",
+            yaxis_title="Minuten",
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+        )
+
         st.plotly_chart(fig, use_container_width=True)
