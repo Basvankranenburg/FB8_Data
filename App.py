@@ -184,6 +184,10 @@ with tab_dashboard:
             total_draws = (match_summary["Points"] == 1).sum()
             total_losses = (match_summary["Points"] == 0).sum()
 
+            total_goals_voor = match_summary["Goals_Voor"].sum()
+            total_goals_tegen = match_summary["Goals_Tegen"].sum()
+            goal_difference = total_goals_voor - total_goals_tegen
+
             # ---------------------------------------------------
             # Player Aggregation Summary
             # ---------------------------------------------------
@@ -242,8 +246,8 @@ with tab_dashboard:
             )
             col4.metric(
                 label = "Goals gescoord",
-                value=Goals_voor,
-                delta=f"{Goals_voor} Goals"
+                value=total_goals_voor,
+                delta=f"{total_goals_voor} Goals"
             )
 
 
