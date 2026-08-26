@@ -26,7 +26,7 @@ tab_entry, tab_dashboard = st.tabs(["Data Entry", "Data dashboard"])
 # Default Squad Roster
 squad = [
     {"Speler": "Aron", "Position": "FW"},
-    {"Speler": "Jesse", "Position": "FW"},
+    {"Speler": "Jesse S", "Position": "FW"},
     {"Speler": "Jort", "Position": "MF"},
     {"Speler": "Justin", "Position": "MF"},
     {"Speler": "Owen", "Position": "MF"},
@@ -36,7 +36,7 @@ squad = [
     {"Speler": "Tygo", "Position": "DF"},
     {"Speler": "Bryan", "Position": "DF"},
     {"Speler": "Cheveyo", "Position": "DF"},
-    {"Speler": "Jesse", "Position": "DF"},
+    {"Speler": "Jesse K", "Position": "DF"},
     {"Speler": "Mark", "Position": "DF"},
     {"Speler": "Martijn", "Position": "DF"},
     {"Speler": "Mike", "Position": "DF"},
