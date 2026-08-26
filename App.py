@@ -32,7 +32,7 @@ squad = [
     {"Speler": "Owen", "Position": "MF"},
     {"Speler": "Rob", "Position": "DF"},
     {"Speler": "Ruben", "Position": "DF"},
-    {"Speler": "Sam Salib", "Position": "DF"},
+    {"Speler": "Sam", "Position": "DF"},
     {"Speler": "Tygo", "Position": "DF"},
     {"Speler": "Bryan", "Position": "DF"},
     {"Speler": "Cheveyo", "Position": "DF"},
@@ -45,10 +45,9 @@ squad = [
     {"Speler": "Swen", "Position": "DF"},
     {"Speler": "Tim", "Position": "DF"},
     {"Speler": "Twan", "Position": "DF"},
-    {"Speler": "Yannick", "Position": "GK"},
-    
+    {"Speler": "Yannick", "Position": "GK"}
 ]
-
+ 
 # ==========================================
 # TAB 1: DATA ENTRY FORM
 # ==========================================
