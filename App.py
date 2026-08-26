@@ -55,13 +55,17 @@ with tab_entry:
     st.header("FLEVO BOYS 8 DATA LOG")
     
     # Match Metadata Inputs
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
         match_date = st.date_input("Wedstrijd datum")
     with col2:
         opponent = st.text_input("Tegenstander", value="SCE 5")
     with col3:
         competition = st.selectbox("Competitie", ["Beker", "Competitie", "Vriendschappelijk"])
+    with col4:
+        Goals_voor = st.number_input("Goals gescoord", min_value=0)
+    with col5:
+        Goals_tegen = st.number_input("Goals tegen", min_value=0)
 
     st.subheader("Lineup & Minutes")
     
