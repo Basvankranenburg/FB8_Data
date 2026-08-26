@@ -14,12 +14,20 @@ conn = st.connection("gsheets", type=GSheetsConnection)
 def load_data():
     try:
         # ttl=0 bypasses caching to fetch live data
-        return conn.read(ttl=0)
+        df = conn.read(ttl=0)
+        
+        # Ensure essential match metadata columns exist even if sheet was created early on
+        if "Goals_voor" not in df.columns:
+            df["Goals_voor"] = 0
+        if "Goals_tegen" not in df.columns:
+            df["Goals_tegen"] = 0
+            
+        return df
     except Exception:
         # Returns an empty DataFrame with proper columns if the sheet is fresh/empty
         return pd.DataFrame(columns=[
-            "Date", "Opponent", "Competition", "Speler", "Position", 
-            "Starter", "Minutes", "mins_aanwezig", "Goals", "Assist"
+            "Date", "Opponent", "Competition", "Goals_voor", "Goals_tegen",
+            "Speler", "Position", "Starter", "Minutes", "mins_aanwezig", "Goals", "Assist"
         ])
 
 # App Navigation
@@ -95,6 +103,8 @@ with tab_entry:
                 "Date": str(match_date),
                 "Opponent": opponent,
                 "Competition": competition,
+                "Goals_voor": Goals_voor,
+                "Goals_tegen": Goals_tegen,
                 "Speler": Speler["Speler"],
                 "Position": Speler["Position"],
                 "Starter": starter,
@@ -125,31 +135,6 @@ with tab_entry:
 # ==========================================
 # TAB 2: DASHBOARD & ANALYTICS
 # ==========================================
-
-#---------------------------------------------------
-#Calc
-#---------------------------------------------------
-match_summary = df.groupby(["Date", "Opponent"]).agg(
-    Goals_Voor=("Goals", "sum"),  # Or pull directly from your metadata log
-    Goals_Tegen=("Goals_tegen", "first")
-).reset_index()
-
-# Determine outcome
-def get_points(row):
-    if row["Goals_Voor"] > row["Goals_Tegen"]:
-        return 3  # Win
-    elif row["Goals_Voor"] == row["Goals_Tegen"]:
-        return 1  # Draw
-    return 0     # Loss
-
-match_summary["Points"] = match_summary.apply(get_points)
-total_points = match_summary["Points"].sum()
-total_wins = (match_summary["Points"] == 3).sum()
-total_draws = (match_summary["Points"] == 1).sum()
-total_losses = (match_summary["Points"] == 0).sum()
-
-
-
 with tab_dashboard:
     st.header("Flevo Boys 8 - Data")
     df = load_data()
@@ -162,14 +147,37 @@ with tab_dashboard:
         df["mins_aanwezig"] = pd.to_numeric(df["mins_aanwezig"], errors="coerce").fillna(0)
         df["Goals"] = pd.to_numeric(df["Goals"], errors="coerce").fillna(0)
         df["Assist"] = pd.to_numeric(df["Assist"], errors="coerce").fillna(0)
+        df["Goals_voor"] = pd.to_numeric(df["Goals_voor"], errors="coerce").fillna(0)
+        df["Goals_tegen"] = pd.to_numeric(df["Goals_tegen"], errors="coerce").fillna(0)
+
+        # ---------------------------------------------------
+        # Calculation Logic (Inside Dashboard Tab)
+        # ---------------------------------------------------
+        match_summary = df.groupby(["Date", "Opponent"]).agg(
+            Goals_Voor=("Goals_voor", "first"),
+            Goals_Tegen=("Goals_tegen", "first")
+        ).reset_index()
+
+        def get_points(row):
+            if row["Goals_Voor"] > row["Goals_Tegen"]:
+                return 3
+            elif row["Goals_Voor"] == row["Goals_Tegen"]:
+                return 1
+            return 0
+
+        match_summary["Points"] = match_summary.apply(get_points, axis=1)
+        total_points = match_summary["Points"].sum()
+        total_wins = (match_summary["Points"] == 3).sum()
+        total_draws = (match_summary["Points"] == 1).sum()
+        total_losses = (match_summary["Points"] == 0).sum()
 
         # High-level KPIs
         kpi1, kpi2, kpi3 = st.columns(3)
         kpi1.metric("Total Matches Logged", df["Date"].nunique())
-        kpi2.metric("Total Minutes Logged", int(df["Goals"].sum()))
+        kpi2.metric("Total Minutes Logged", int(df["Minutes"].sum()))
         kpi3.metric("Avg Minutes / Match", round(df.groupby("Date")["Minutes"].sum().mean(), 1))
 
-        # Fixed GroupBy Aggregation Syntax and matched 'Ja' / 'Nee' check
+        # Fixed GroupBy Aggregation Syntax
         summary = df.groupby(["Speler", "Position"]).agg(
             Matches_Played=("Minutes", lambda x: (x > 0).sum()),
             Starts=("Starter", lambda x: (x == "Ja").sum()),
@@ -184,29 +192,27 @@ with tab_dashboard:
         summary = summary.sort_values(by="Minuten_aanwezig", ascending=False)
 
         st.subheader("Team statistieken")
-        col1 = st.columns(1)
-
-        col1.metric(
-            Label = "Totale punten",
-            value=total_points,
-            delta=f"{int(total_points)} punten"
+        metric_col1, metric_col2 = st.columns(2)
+        metric_col1.metric(
+            label="Totale punten",
+            value=f"{int(total_points)} pts",
+            delta=f"W{total_wins} - G{total_draws} - V{total_losses}"
         )
 
         st.subheader("Speel data")
         st.dataframe(
-        summary.style.format({
-        "Matches_Played": "{:.0f}",
-        "Starts": "{:.0f}",
-        "Sub_Apps": "{:.0f}",
-        "Total_Minutes": "{:.0f}",
-        "Minuten_aanwezig": "{:.0f}",
-        "Goals": "{:.0f}",
-        "Assists": "{:.0f}",
-        "Avg_Minutes": "{:.1f}"  # Keeps 1 decimal for averages
-    }), 
-    use_container_width=True
-    )
-       # st.dataframe(summary.style.format({"Avg_Minutes": "{:.1f}", "Goals": "{:0.f}"}), use_container_width=True)
+            summary.style.format({
+                "Matches_Played": "{:.0f}",
+                "Starts": "{:.0f}",
+                "Sub_Apps": "{:.0f}",
+                "Total_Minutes": "{:.0f}",
+                "Minuten_aanwezig": "{:.0f}",
+                "Goals": "{:.0f}",
+                "Assists": "{:.0f}",
+                "Avg_Minutes": "{:.1f}"
+            }), 
+            use_container_width=True
+        )
 
         # Interactive Overlay Bar Chart
         fig = go.Figure()
