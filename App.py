@@ -212,20 +212,6 @@ with tab_dashboard:
                 delta=f"W{total_wins} - G{total_draws} - V{total_losses}"
             )
 
-            st.subheader("Speel data")
-            st.dataframe(
-                summary.style.format({
-                    "Matches_Played": "{:.0f}",
-                    "Starts": "{:.0f}",
-                    "Sub_Apps": "{:.0f}",
-                    "Total_Minutes": "{:.0f}",
-                    "Minuten_aanwezig": "{:.0f}",
-                    "Goals": "{:.0f}",
-                    "Assists": "{:.0f}",
-                    "Avg_Minutes": "{:.1f}"
-                }), 
-                use_container_width=True
-            )
 
             # Interactive Overlay Bar Chart
             fig = go.Figure()
