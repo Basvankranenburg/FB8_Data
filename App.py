@@ -30,6 +30,8 @@ squad = [
     {"Speler": "Declan Rice", "Position": "MF"},
     {"Speler": "Virgil van Dijk", "Position": "DF"},
     {"Speler": "William Saliba", "Position": "DF"},
+    {"Speler": "William Saliba", "Position": "DF"},
+    {"Speler": "William Saliba", "Position": "DF"},
 ]
 
 # ==========================================
