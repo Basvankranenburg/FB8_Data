@@ -29,9 +29,9 @@ squad = [
     {"Speler": "Jude Bellingham", "Position": "MF"},
     {"Speler": "Declan Rice", "Position": "MF"},
     {"Speler": "Virgil van Dijk", "Position": "DF"},
-    {"Speler": "William Saliba", "Position": "DF"},
-    {"Speler": "William Saliba", "Position": "DF"},
-    {"Speler": "William Saliba", "Position": "DF"},
+    {"Speler": "Willia Saliba", "Position": "DF"},
+    {"Speler": "William Salib", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
 ]
 
 # ==========================================
