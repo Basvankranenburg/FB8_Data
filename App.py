@@ -1,9 +1,8 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 from streamlit_gsheets import GSheetsConnection
-
-#TEST TEST ETST test 3
 
 # 1. Page Config MUST be the first Streamlit command
 st.set_page_config(page_title="Squad Minutes Tracker", layout="wide")
@@ -18,7 +17,10 @@ def load_data():
         return conn.read(ttl=0)
     except Exception:
         # Returns an empty DataFrame with proper columns if the sheet is fresh/empty
-        return pd.DataFrame(columns=["Date", "Opponent", "Competition", "Speler", "Position", "Starter", "Minutes", "Notes"])
+        return pd.DataFrame(columns=[
+            "Date", "Opponent", "Competition", "Speler", "Position", 
+            "Starter", "Minutes", "mins_aanwezig", "Goals", "Assist"
+        ])
 
 # App Navigation
 tab_entry, tab_dashboard = st.tabs(["Data Entry", "Data dashboard"])
@@ -47,7 +49,7 @@ squad = [
     {"Speler": "Twan", "Position": "DF"},
     {"Speler": "Yannick", "Position": "GK"}
 ]
- 
+
 # ==========================================
 # TAB 1: DATA ENTRY FORM
 # ==========================================
@@ -72,20 +74,22 @@ with tab_entry:
     # Use st.form to group inputs together nicely
     with st.form("match_entry_form"):
         form_data = []
-        for Speler in squad:
+        
+        # Added enumerate(squad) to ensure unique keys with _{i}
+        for i, Speler in enumerate(squad):
             c1, c2, c3, c4, c5, c6 = st.columns([3, 3, 3, 3, 3, 3])
             with c1:
                 st.write(f"**{Speler['Speler']}** ({Speler['Position']})")
             with c2:
-                starter = st.selectbox("Basis?", ["Ja", "Nee"], key=f"start_{Speler['Speler']}")
+                starter = st.selectbox("Basis?", ["Ja", "Nee"], key=f"start_{Speler['Speler']}_{i}")
             with c3:
-                mins = st.number_input("Minuten gespeeld", min_value=0, max_value=120, value=0, key=f"min_{Speler['Speler']}")
+                mins = st.number_input("Minuten gespeeld", min_value=0, max_value=120, value=0, key=f"min_{Speler['Speler']}_{i}")
             with c4:
-                mins_aanwezig = st.number_input("Minuten aanwezig", min_value=0, key=f"minaanwezig_{Speler['Speler']}")
+                mins_aanwezig = st.number_input("Minuten aanwezig", min_value=0, value=0, key=f"minaanwezig_{Speler['Speler']}_{i}")
             with c5:
-                goals = st.number_input("Goals", min_value=0,key=f"goals_{Speler['Speler']}" )
+                goals = st.number_input("Goals", min_value=0, key=f"goals_{Speler['Speler']}_{i}")
             with c6:
-                assist = st.number_input("Assist", min_value=0,key=f"assist_{Speler['Speler']}" )
+                assist = st.number_input("Assist", min_value=0, key=f"assist_{Speler['Speler']}_{i}")
 
             form_data.append({
                 "Date": str(match_date),
@@ -108,15 +112,15 @@ with tab_entry:
         df_existing = load_data()
         df_new = pd.DataFrame(form_data)
         
-        # Filter out players who didn't play (0 minutes)
-        df_new = df_new[df_new["Minutes"] > 0]
+        # Filter out players who were not present (0 minutes present)
+        df_new = df_new[df_new["mins_aanwezig"] > 0]
         
         if not df_new.empty:
             df_combined = pd.concat([df_existing, df_new], ignore_index=True)
             conn.update(data=df_combined)
             st.success(f"Successfully recorded data for match vs {opponent}!")
         else:
-            st.warning("No player minutes were entered (all set to 0).")
+            st.warning("No player presence was entered (all set to 0).")
 
 # ==========================================
 # TAB 2: DASHBOARD & ANALYTICS
@@ -130,6 +134,9 @@ with tab_dashboard:
     else:
         # Ensure numerical types
         df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce").fillna(0)
+        df["mins_aanwezig"] = pd.to_numeric(df["mins_aanwezig"], errors="coerce").fillna(0)
+        df["Goals"] = pd.to_numeric(df["Goals"], errors="coerce").fillna(0)
+        df["Assist"] = pd.to_numeric(df["Assist"], errors="coerce").fillna(0)
 
         # High-level KPIs
         kpi1, kpi2, kpi3 = st.columns(3)
@@ -137,13 +144,15 @@ with tab_dashboard:
         kpi2.metric("Total Minutes Logged", int(df["Minutes"].sum()))
         kpi3.metric("Avg Minutes / Match", round(df.groupby("Date")["Minutes"].sum().mean(), 1))
 
-        # Squad Summary Calculation
+        # Fixed GroupBy Aggregation Syntax and matched 'Ja' / 'Nee' check
         summary = df.groupby(["Speler", "Position"]).agg(
             Matches_Played=("Minutes", lambda x: (x > 0).sum()),
-            Starts=("Starter", lambda x: (x == "Yes").sum()),
-            Sub_Apps=("Starter", lambda x: (x == "No").sum()),
+            Starts=("Starter", lambda x: (x == "Ja").sum()),
+            Sub_Apps=("Starter", lambda x: (x == "Nee").sum()),
             Total_Minutes=("Minutes", "sum"),
-            Minuten_aanwezig=("mins_aanwezig"),
+            Minuten_aanwezig=("mins_aanwezig", "sum"),
+            Goals=("Goals", "sum"),
+            Assists=("Assist", "sum"),
             Avg_Minutes=("Minutes", "mean"),
         ).reset_index()
 
@@ -152,19 +161,17 @@ with tab_dashboard:
         st.subheader("Speler Summary Table")
         st.dataframe(summary.style.format({"Avg_Minutes": "{:.1f}"}), use_container_width=True)
 
-        # Interactive Chart
-        import plotly.graph_objects as go
-
+        # Interactive Overlay Bar Chart
         fig = go.Figure()
         
         # Background Bar: Total Minutes Present
         fig.add_trace(go.Bar(
             x=summary["Speler"],
             y=summary["Minuten_aanwezig"],
-            name="Totale Aanwezigheid (Wedstrijdtijd)",
+            name="Totale Aanwezigheid (Minuten)",
             marker_color="lightgray",
             opacity=0.6,
-            width=0.6  # Slightly wider bar for the background
+            width=0.6
         ))
 
         # Foreground Bar: Minutes Played
@@ -172,11 +179,10 @@ with tab_dashboard:
             x=summary["Speler"],
             y=summary["Total_Minutes"],
             name="Gespeelde minuten",
-            marker_color="#2ca02c",  # Green
-            width=0.4  # Slightly narrower bar to fit inside the background bar
+            marker_color="#2ca02c",
+            width=0.4
         ))
 
-        # 3. Configure Overlay Layout
         fig.update_layout(
             barmode="overlay",
             title="Speltijd vs. Totale Aanwezigheid per Speler",
