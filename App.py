@@ -223,7 +223,7 @@ with tab_dashboard:
             # Streamlit Visual Display
             # ---------------------------------------------------
             st.subheader("Team statistieken")
-            metric_col1, metric_col2, metric_col3 = st.columns(3)
+            metric_col1, metric_col2, metric_col3, col4 = st.columns(4)
             
             metric_col1.metric(
                 label="Totale punten",
@@ -231,15 +231,22 @@ with tab_dashboard:
                 delta=f"W{total_wins} - G{total_draws} - V{total_losses}"
             )
             metric_col2.metric(
-                label="⚽ Topscorer",
+                label="Topscorer",
                 value=top_scorer_name,
                 delta=f"{top_goals_count} goals"
             )
             metric_col3.metric(
-                label="🅰️ Meeste Assists",
+                label="Meeste Assists",
                 value=top_assist_name,
                 delta=f"{top_assists_count} assists"
             )
+            col4.metric(
+                label = "Goals gescoord"
+                value=Goals_voor,
+                delta=f"{Goals_voor} Goals"
+            )
+
+
 
             st.subheader("Speel data")
             st.dataframe(
