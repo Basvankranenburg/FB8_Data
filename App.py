@@ -16,7 +16,7 @@ def load_data():
         return conn.read(ttl=0)
     except Exception:
         # Returns an empty DataFrame with proper columns if the sheet is fresh/empty
-        return pd.DataFrame(columns=["Date", "Opponent", "Competition", "Player", "Position", "Starter", "Minutes", "Notes"])
+        return pd.DataFrame(columns=["Date", "Opponent", "Competition", "Speler", "Position", "Starter", "Minutes", "Notes"])
 
 # App Navigation
 tab_entry, tab_dashboard = st.tabs(["📝 Data Entry Form", "📊 Dashboard"])
@@ -52,23 +52,23 @@ with tab_entry:
     # Use st.form to group inputs together nicely
     with st.form("match_entry_form"):
         form_data = []
-        for player in squad:
+        for Speler in squad:
             c1, c2, c3, c4 = st.columns([3, 2, 2, 4])
             with c1:
-                st.write(f"**{player['Player']}** ({player['Position']})")
+                st.write(f"**{Speler['Speler']}** ({Speler['Position']})")
             with c2:
-                starter = st.selectbox("Starter?", ["Yes", "No"], key=f"start_{player['Player']}")
+                starter = st.selectbox("Starter?", ["Yes", "No"], key=f"start_{Speler['Speler']}")
             with c3:
-                mins = st.number_input("Minutes", min_value=0, max_value=120, value=0, key=f"min_{player['Player']}")
+                mins = st.number_input("Minutes", min_value=0, max_value=120, value=0, key=f"min_{Speler['Speler']}")
             with c4:
-                notes = st.text_input("Notes", key=f"note_{player['Player']}")
+                notes = st.text_input("Notes", key=f"note_{Speler['Speler']}")
             
             form_data.append({
                 "Date": str(match_date),
                 "Opponent": opponent,
                 "Competition": competition,
-                "Player": player["Player"],
-                "Position": player["Position"],
+                "Speler": Speler["Speler"],
+                "Position": Speler["Position"],
                 "Starter": starter,
                 "Minutes": mins,
                 "Notes": notes
@@ -112,7 +112,7 @@ with tab_dashboard:
         kpi3.metric("Avg Minutes / Match", round(df.groupby("Date")["Minutes"].sum().mean(), 1))
 
         # Squad Summary Calculation
-        summary = df.groupby(["Player", "Position"]).agg(
+        summary = df.groupby(["Speler", "Position"]).agg(
             Matches_Played=("Minutes", lambda x: (x > 0).sum()),
             Starts=("Starter", lambda x: (x == "Yes").sum()),
             Sub_Apps=("Starter", lambda x: (x == "No").sum()),
@@ -120,9 +120,9 @@ with tab_dashboard:
             Avg_Minutes=("Minutes", "mean")
         ).reset_index()
 
-        st.subheader("Player Summary Table")
+        st.subheader("Speler Summary Table")
         st.dataframe(summary.style.format({"Avg_Minutes": "{:.1f}"}), use_container_width=True)
 
         # Interactive Chart
-        fig = px.bar(summary, x="Player", y="Total_Minutes", color="Position", title="Total Minutes by Player")
+        fig = px.bar(summary, x="Speler", y="Total_Minutes", color="Position", title="Total Minutes by Player")
         st.plotly_chart(fig, use_container_width=True)
