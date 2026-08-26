@@ -125,6 +125,31 @@ with tab_entry:
 # ==========================================
 # TAB 2: DASHBOARD & ANALYTICS
 # ==========================================
+
+#---------------------------------------------------
+#Calc
+#---------------------------------------------------
+match_summary = df.groupby(["Date", "Opponent"]).agg(
+    Goals_Voor=("Goals", "sum"),  # Or pull directly from your metadata log
+    Goals_Tegen=("Goals_tegen", "first")
+).reset_index()
+
+# Determine outcome
+def get_points(row):
+    if row["Goals_Voor"] > row["Goals_Tegen"]:
+        return 3  # Win
+    elif row["Goals_Voor"] == row["Goals_Tegen"]:
+        return 1  # Draw
+    return 0     # Loss
+
+match_summary["Points"] = match_summary.apply(get_points)
+total_points = match_summary["Points"].sum()
+total_wins = (match_summary["Points"] == 3).sum()
+total_draws = (match_summary["Points"] == 1).sum()
+total_losses = (match_summary["Points"] == 0).sum()
+
+
+
 with tab_dashboard:
     st.header("Flevo Boys 8 - Data")
     df = load_data()
@@ -159,6 +184,13 @@ with tab_dashboard:
         summary = summary.sort_values(by="Minuten_aanwezig", ascending=False)
 
         st.subheader("Team statistieken")
+        col1 = st.columns(1)
+
+        col1.metric(
+            Label = "Totale punten",
+            value=total_points,
+            delta=f"{int(total_points)} punten"
+        )
 
         st.subheader("Speel data")
         st.dataframe(
