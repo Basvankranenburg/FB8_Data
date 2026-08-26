@@ -143,8 +143,8 @@ with tab_dashboard:
             Starts=("Starter", lambda x: (x == "Yes").sum()),
             Sub_Apps=("Starter", lambda x: (x == "No").sum()),
             Total_Minutes=("Minutes", "sum"),
-            Minuten_aanwezig=("mins_aanwezig")
-            Avg_Minutes=("Minutes", "mean")
+            Minuten_aanwezig=("mins_aanwezig"),
+            Avg_Minutes=("Minutes", "mean"),
         ).reset_index()
 
         summary = summary.sort_values(by="Minuten_aanwezig", ascending=False)
