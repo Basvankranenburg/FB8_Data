@@ -248,7 +248,7 @@ with tab_dashboard:
             col4.metric(
                 label = "Goals gescoord",
                 value=total_goals_voor,
-                delta=f"{total_goals_voor:,0f} Goals"
+                delta=f"{total_goals_voor:.0f} Goals"
             )
             
 
