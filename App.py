@@ -1,27 +1,24 @@
 import streamlit as st
 import pandas as pd
-import os
 import plotly.express as px
-
 from streamlit_gsheets import GSheetsConnection
 
-# Establish Google Sheets Connection
+# 1. Page Config MUST be the first Streamlit command
+st.set_page_config(page_title="Squad Minutes Tracker", layout="wide")
+
+# 2. Establish Google Sheets Connection
 conn = st.connection("gsheets", type=GSheetsConnection)
 
-# Read live data from Google Sheets
-df_data = conn.read(ttl=0) # ttl=0 ensures it fetches live data without caching
-
-# Append new entry back to Google Sheets
-if submitted:
-    new_df = pd.DataFrame(player_inputs)
-    new_df = new_df[new_df["Minutes"] > 0]
-    
-    updated_df = pd.concat([df_data, new_df], ignore_index=True)
-    conn.update(data=updated_df)
-    st.success("Match saved live to Google Sheets!")
+# Helper function to read live data from Google Sheets
+def load_data():
+    try:
+        # ttl=0 bypasses caching to fetch live data
+        return conn.read(ttl=0)
+    except Exception:
+        # Returns an empty DataFrame with proper columns if the sheet is fresh/empty
+        return pd.DataFrame(columns=["Date", "Opponent", "Competition", "Player", "Position", "Starter", "Minutes", "Notes"])
 
 # App Navigation
-st.set_page_config(page_title="Squad Minutes Tracker", layout="wide")
 tab_entry, tab_dashboard = st.tabs(["📝 Data Entry Form", "📊 Dashboard"])
 
 # Default Squad Roster
@@ -41,7 +38,7 @@ squad = [
 with tab_entry:
     st.header("⚽ Match Minutes Entry Form")
     
-    # 1. Match Metadata Inputs
+    # Match Metadata Inputs
     col1, col2, col3 = st.columns(3)
     with col1:
         match_date = st.date_input("Match Date")
@@ -52,40 +49,48 @@ with tab_entry:
 
     st.subheader("Lineup & Minutes")
     
-    # 2. Interactive Squad Input Form
-    form_data = []
-    for player in squad:
-        c1, c2, c3, c4 = st.columns([3, 2, 2, 4])
-        with c1:
-            st.write(f"**{player['Player']}** ({player['Position']})")
-        with c2:
-            starter = st.selectbox("Starter?", ["Yes", "No"], key=f"start_{player['Player']}")
-        with c3:
-            mins = st.number_input("Minutes", min_value=0, max_value=120, value=0, key=f"min_{player['Player']}")
-        with c4:
-            notes = st.text_input("Notes", key=f"note_{player['Player']}")
-        
-        form_data.append({
-            "Date": match_date,
-            "Opponent": opponent,
-            "Competition": competition,
-            "Player": player["Player"],
-            "Position": player["Position"],
-            "Starter": starter,
-            "Minutes": mins,
-            "Notes": notes
-        })
+    # Use st.form to group inputs together nicely
+    with st.form("match_entry_form"):
+        form_data = []
+        for player in squad:
+            c1, c2, c3, c4 = st.columns([3, 2, 2, 4])
+            with c1:
+                st.write(f"**{player['Player']}** ({player['Position']})")
+            with c2:
+                starter = st.selectbox("Starter?", ["Yes", "No"], key=f"start_{player['Player']}")
+            with c3:
+                mins = st.number_input("Minutes", min_value=0, max_value=120, value=0, key=f"min_{player['Player']}")
+            with c4:
+                notes = st.text_input("Notes", key=f"note_{player['Player']}")
+            
+            form_data.append({
+                "Date": str(match_date),
+                "Opponent": opponent,
+                "Competition": competition,
+                "Player": player["Player"],
+                "Position": player["Position"],
+                "Starter": starter,
+                "Minutes": mins,
+                "Notes": notes
+            })
 
-    # 3. Save Button
-    if st.button("🚀 Submit Match Minutes", type="primary"):
+        # Submit Button inside the form
+        submitted = st.form_submit_button("🚀 Submit Match Minutes", type="primary")
+
+    # Save logic triggers only when button is clicked
+    if submitted:
         df_existing = load_data()
         df_new = pd.DataFrame(form_data)
+        
         # Filter out players who didn't play (0 minutes)
         df_new = df_new[df_new["Minutes"] > 0]
         
-        df_combined = pd.concat([df_existing, df_new], ignore_index=True)
-        save_data(df_combined)
-        st.success(f"Successfully recorded data for match vs {opponent}!")
+        if not df_new.empty:
+            df_combined = pd.concat([df_existing, df_new], ignore_index=True)
+            conn.update(data=df_combined)
+            st.success(f"Successfully recorded data for match vs {opponent}!")
+        else:
+            st.warning("No player minutes were entered (all set to 0).")
 
 # ==========================================
 # TAB 2: DASHBOARD & ANALYTICS
@@ -97,10 +102,13 @@ with tab_dashboard:
     if df.empty:
         st.warning("No match data logged yet. Use the Data Entry tab to log your first match!")
     else:
+        # Ensure numerical types
+        df["Minutes"] = pd.to_numeric(df["Minutes"], errors="coerce").fillna(0)
+
         # High-level KPIs
         kpi1, kpi2, kpi3 = st.columns(3)
         kpi1.metric("Total Matches Logged", df["Date"].nunique())
-        kpi2.metric("Total Minutes Logged", df["Minutes"].sum())
+        kpi2.metric("Total Minutes Logged", int(df["Minutes"].sum()))
         kpi3.metric("Avg Minutes / Match", round(df.groupby("Date")["Minutes"].sum().mean(), 1))
 
         # Squad Summary Calculation
