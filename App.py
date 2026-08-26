@@ -186,7 +186,7 @@ with tab_dashboard:
             total_losses = (match_summary["Points"] == 0).sum()
 
             total_goals_voor = match_summary["Goals_Voor"].sum()
-            total_goals_tegen = match_summary["Goals_Tegen"].sum()
+            total_goals_tegen = match_summary[-"Goals_Tegen"].sum()
             goal_difference = total_goals_voor - total_goals_tegen
 
             # ---------------------------------------------------
