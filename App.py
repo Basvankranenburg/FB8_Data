@@ -77,7 +77,7 @@ with tab_entry:
             with c3:
                 mins = st.number_input("Minuten gespeeld", min_value=0, max_value=120, value=0, key=f"min_{Speler['Speler']}")
             with c4:
-                notes = st.text_input("Notes", key=f"note_{Speler['Speler']}")
+                mins_aanwezig = st.number_input("Minuten aanwezig", min_value=0. key=f"minaanwezig_{Speler['Speler']}")
             
             form_data.append({
                 "Date": str(match_date),
@@ -87,7 +87,7 @@ with tab_entry:
                 "Position": Speler["Position"],
                 "Starter": starter,
                 "Minutes": mins,
-                "Notes": notes
+                "mins_aanwezig": mins_aanwezig
             })
 
         # Submit Button inside the form
