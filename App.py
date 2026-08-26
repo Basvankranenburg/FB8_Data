@@ -158,7 +158,9 @@ with tab_dashboard:
 
         summary = summary.sort_values(by="Minuten_aanwezig", ascending=False)
 
-        st.subheader("Speler data")
+        st.subheader("Team statistieken")
+
+        st.subheader("Speel data")
         st.dataframe(
         summary.style.format({
         "Matches_Played": "{:.0f}",
