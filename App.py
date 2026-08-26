@@ -23,13 +23,13 @@ tab_entry, tab_dashboard = st.tabs(["📝 Data Entry Form", "📊 Dashboard"])
 
 # Default Squad Roster
 squad = [
-    {"Player": "Alex Morgan", "Position": "FW"},
-    {"Player": "Marcus Rashford", "Position": "FW"},
-    {"Player": "Kevin De Bruyne", "Position": "MF"},
-    {"Player": "Jude Bellingham", "Position": "MF"},
-    {"Player": "Declan Rice", "Position": "MF"},
-    {"Player": "Virgil van Dijk", "Position": "DF"},
-    {"Player": "William Saliba", "Position": "DF"},
+    {"Speler": "Alex Morgan", "Position": "FW"},
+    {"Speler": "Marcus Rashford", "Position": "FW"},
+    {"Speler": "Kevin De Bruyne", "Position": "MF"},
+    {"Speler": "Jude Bellingham", "Position": "MF"},
+    {"Speler": "Declan Rice", "Position": "MF"},
+    {"Speler": "Virgil van Dijk", "Position": "DF"},
+    {"Speler": "William Saliba", "Position": "DF"},
 ]
 
 # ==========================================
