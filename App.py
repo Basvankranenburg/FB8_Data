@@ -3,17 +3,22 @@ import pandas as pd
 import os
 import plotly.express as px
 
-# File paths for backend data storage
-LOGS_FILE = "match_logs.csv"
+from streamlit_gsheets import GSheetsConnection
 
-# Load or initialize the hidden match database
-def load_data():
-    if os.path.exists(LOGS_FILE):
-        return pd.read_csv(LOGS_FILE)
-    return pd.DataFrame(columns=["Date", "Opponent", "Competition", "Player", "Position", "Starter", "Minutes", "Notes"])
+# Establish Google Sheets Connection
+conn = st.connection("gsheets", type=GSheetsConnection)
 
-def save_data(df):
-    df.to_csv(LOGS_FILE, index=False)
+# Read live data from Google Sheets
+df_data = conn.read(ttl=0) # ttl=0 ensures it fetches live data without caching
+
+# Append new entry back to Google Sheets
+if submitted:
+    new_df = pd.DataFrame(player_inputs)
+    new_df = new_df[new_df["Minutes"] > 0]
+    
+    updated_df = pd.concat([df_data, new_df], ignore_index=True)
+    conn.update(data=updated_df)
+    st.success("Match saved live to Google Sheets!")
 
 # App Navigation
 st.set_page_config(page_title="Squad Minutes Tracker", layout="wide")
