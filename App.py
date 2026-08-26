@@ -35,12 +35,12 @@ def load_data():
 # App Navigation
 # Sidebar Login for Admins / Coaches
 st.sidebar.title("Beheerder Inloggen")
-is_admin = st.sidebar.checkbox("Ik ben trainer / leiding")
+is_admin = st.sidebar.checkbox("Ik ben trainer / leider")
 
 logged_in = False
 if is_admin:
     admin_password = st.sidebar.text_input("Wachtwoord:", type="password")
-    if admin_password == "flevo8":  # Change your password here
+    if admin_password == "#FB8#":  # Change your password here
         st.sidebar.success("Ingelogd!")
         logged_in = True
     elif admin_password != "":
