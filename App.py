@@ -250,7 +250,11 @@ with tab_dashboard:
                 value=total_goals_voor,
                 delta=f"{total_goals_voor:.0f} Goals"
             )
-            
+            col5.metric(
+                label="Goals tegen", 
+                value=total_goals_tegen,
+                delta=f"{total_goals_tegen} Goals"
+            )
 
 
             st.subheader("Speel data")
