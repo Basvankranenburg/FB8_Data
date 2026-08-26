@@ -21,31 +21,31 @@ def load_data():
         return pd.DataFrame(columns=["Date", "Opponent", "Competition", "Speler", "Position", "Starter", "Minutes", "Notes"])
 
 # App Navigation
-tab_entry, tab_dashboard = st.tabs(["📝 Data Entry Form", "📊 Dashboard"])
+tab_entry, tab_dashboard = st.tabs(["Data Entry", "Data dashboard"])
 
 # Default Squad Roster
 squad = [
-    {"Speler": "Alex Morgan", "Position": "FW"},
-    {"Speler": "Marcus Rashford", "Position": "FW"},
-    {"Speler": "Kevin De Bruyne", "Position": "MF"},
-    {"Speler": "Jude Bellingham", "Position": "MF"},
-    {"Speler": "Declan Rice", "Position": "MF"},
-    {"Speler": "Virgil van Dijk", "Position": "DF"},
-    {"Speler": "Willia Saliba", "Position": "DF"},
-    {"Speler": "William Salib", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
-    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "Aron", "Position": "FW"},
+    {"Speler": "Jesse", "Position": "FW"},
+    {"Speler": "Jort", "Position": "MF"},
+    {"Speler": "Justin", "Position": "MF"},
+    {"Speler": "Owen", "Position": "MF"},
+    {"Speler": "Rob", "Position": "DF"},
+    {"Speler": "Ruben", "Position": "DF"},
+    {"Speler": "Sam Salib", "Position": "DF"},
+    {"Speler": "Tygo", "Position": "DF"},
+    {"Speler": "Bryan", "Position": "DF"},
+    {"Speler": "Cheveyo", "Position": "DF"},
+    {"Speler": "Jesse", "Position": "DF"},
+    {"Speler": "Mark", "Position": "DF"},
+    {"Speler": "Martijn", "Position": "DF"},
+    {"Speler": "Mike", "Position": "DF"},
+    {"Speler": "Robin", "Position": "DF"},
+    {"Speler": "Sven", "Position": "DF"},
+    {"Speler": "Swen", "Position": "DF"},
+    {"Speler": "Tim", "Position": "DF"},
+    {"Speler": "Twan", "Position": "DF"},
+    {"Speler": "Yannick", "Position": "GK"},
     
 ]
 
