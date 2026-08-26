@@ -159,7 +159,20 @@ with tab_dashboard:
         summary = summary.sort_values(by="Minuten_aanwezig", ascending=False)
 
         st.subheader("Speler data")
-        st.dataframe(summary.style.format({"Avg_Minutes": "{:.1f}", "Goals": "{:0.f}"}), use_container_width=True)
+        st.dataframe(
+        summary.style.format({
+        "Matches_Played": "{:.0f}",
+        "Starts": "{:.0f}",
+        "Sub_Apps": "{:.0f}",
+        "Total_Minutes": "{:.0f}",
+        "Minuten_aanwezig": "{:.0f}",
+        "Goals": "{:.0f}",
+        "Assists": "{:.0f}",
+        "Avg_Minutes": "{:.1f}"  # Keeps 1 decimal for averages
+    }), 
+    use_container_width=True
+    )
+       # st.dataframe(summary.style.format({"Avg_Minutes": "{:.1f}", "Goals": "{:0.f}"}), use_container_width=True)
 
         # Interactive Overlay Bar Chart
         fig = go.Figure()
