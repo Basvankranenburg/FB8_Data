@@ -241,7 +241,7 @@ with tab_dashboard:
                 delta=f"{top_assists_count} assists"
             )
             col4.metric(
-                label = "Goals gescoord"
+                label = "Goals gescoord",
                 value=Goals_voor,
                 delta=f"{Goals_voor} Goals"
             )
