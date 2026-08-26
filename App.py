@@ -33,7 +33,26 @@ def load_data():
         ])
 
 # App Navigation
-tab_entry, tab_dashboard = st.tabs(["Data Entry", "Data dashboard"])
+# Sidebar Login for Admins / Coaches
+st.sidebar.title("Beheerder Inloggen")
+is_admin = st.sidebar.checkbox("Ik ben trainer / leiding")
+
+logged_in = False
+if is_admin:
+    admin_password = st.sidebar.text_input("Wachtwoord:", type="password")
+    if admin_password == "flevo8":  # Change your password here
+        st.sidebar.success("Ingelogd!")
+        logged_in = True
+    elif admin_password != "":
+        st.sidebar.error("Onjuist wachtwoord")
+
+# Create tabs dynamically based on login state
+if logged_in:
+    tab_entry, tab_dashboard = st.tabs(["Data Entry", "Data dashboard"])
+else:
+    # Teammates only see the Dashboard tab
+    tab_dashboard, = st.tabs(["Data dashboard"])
+    tab_entry = None
 
 # Default Squad Roster
 squad = [
@@ -63,8 +82,9 @@ squad = [
 # ==========================================
 # TAB 1: DATA ENTRY FORM
 # ==========================================
-with tab_entry:
-    st.header("FLEVO BOYS 8 DATA LOG")
+if tab_entry is not None:
+    with tab_entry:
+        st.header("FLEVO BOYS 8 DATA LOG")
     
     
     # Match Metadata Inputs
