@@ -160,6 +160,7 @@ with tab_dashboard:
 
         st.subheader("Speler data")
         st.dataframe(summary.style.format({"Avg_Minutes": "{:.1f}"}), use_container_width=True)
+        st.dataframe(summary.style.format({"Goals": "{:.0f}"}), use_container_width=True)
 
         # Interactive Overlay Bar Chart
         fig = go.Figure()
