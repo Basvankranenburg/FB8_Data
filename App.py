@@ -32,22 +32,35 @@ squad = [
     {"Speler": "Willia Saliba", "Position": "DF"},
     {"Speler": "William Salib", "Position": "DF"},
     {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    {"Speler": "William Sliba", "Position": "DF"},
+    
 ]
 
 # ==========================================
 # TAB 1: DATA ENTRY FORM
 # ==========================================
 with tab_entry:
-    st.header("⚽ Match Minutes Entry Form")
+    st.header("FlevoBoys data log")
     
     # Match Metadata Inputs
     col1, col2, col3 = st.columns(3)
     with col1:
-        match_date = st.date_input("Match Date")
+        match_date = st.date_input("Wedstrijd datum")
     with col2:
-        opponent = st.text_input("Opponent", value="FC Rival")
+        opponent = st.text_input("Tegenstander", value="SCE 5")
     with col3:
-        competition = st.selectbox("Competition", ["League", "Cup", "Friendly"])
+        competition = st.selectbox("Competitie", ["Beker", "Competitie", "Vriendschappelijk"])
 
     st.subheader("Lineup & Minutes")
     
@@ -77,7 +90,7 @@ with tab_entry:
             })
 
         # Submit Button inside the form
-        submitted = st.form_submit_button("🚀 Submit Match Minutes", type="primary")
+        submitted = st.form_submit_button("Data versturen", type="primary")
 
     # Save logic triggers only when button is clicked
     if submitted:
