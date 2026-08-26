@@ -66,6 +66,7 @@ squad = [
 with tab_entry:
     st.header("FLEVO BOYS 8 DATA LOG")
     
+    
     # Match Metadata Inputs
     col1, col2, col3, col4, col5 = st.columns(5)
     with col1:
@@ -227,7 +228,7 @@ with tab_dashboard:
             # Streamlit Visual Display
             # ---------------------------------------------------
             st.subheader("Team statistieken")
-            metric_col1, metric_col2, metric_col3, col4 = st.columns(4)
+            metric_col1, metric_col2, metric_col3, col4, col5 = st.columns(5)
             
             metric_col1.metric(
                 label="Totale punten",
@@ -247,9 +248,9 @@ with tab_dashboard:
             col4.metric(
                 label = "Goals gescoord",
                 value=total_goals_voor,
-                delta=f"{total_goals_voor} Goals"
+                delta=f"{total_goals_voor:,0f} Goals"
             )
-
+            
 
 
             st.subheader("Speel data")
@@ -263,7 +264,6 @@ with tab_dashboard:
                     "Goals": "{:.0f}",
                     "Assists": "{:.0f}",
                     "Avg_Minutes": "{:.1f}",
-                    "total_goals_voor": "{:.1f}",
                 }), 
                 use_container_width=True
             )
