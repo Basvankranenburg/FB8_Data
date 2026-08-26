@@ -52,7 +52,7 @@ squad = [
 # TAB 1: DATA ENTRY FORM
 # ==========================================
 with tab_entry:
-    st.header("FlevoBoys data log")
+    st.header("FLEVO BOYS 8 DATA LOG")
     
     # Match Metadata Inputs
     col1, col2, col3 = st.columns(3)
@@ -69,7 +69,7 @@ with tab_entry:
     with st.form("match_entry_form"):
         form_data = []
         for Speler in squad:
-            c1, c2, c3, c4 = st.columns([3, 2, 2, 4])
+            c1, c2, c3, c4, c5, c6 = st.columns([3, 2, 2, 4, 5, 6])
             with c1:
                 st.write(f"**{Speler['Speler']}** ({Speler['Position']})")
             with c2:
@@ -78,7 +78,11 @@ with tab_entry:
                 mins = st.number_input("Minuten gespeeld", min_value=0, max_value=120, value=0, key=f"min_{Speler['Speler']}")
             with c4:
                 mins_aanwezig = st.number_input("Minuten aanwezig", min_value=0, key=f"minaanwezig_{Speler['Speler']}")
-            
+            with c5:
+                goals = st.number_input("Goals", min_value=0,key=f"goals_{Speler['Speler']}" )
+            with c6:
+                assist = st.number_input("Assist", min_value=0,key=f"assist_{Speler['Speler']}" )
+
             form_data.append({
                 "Date": str(match_date),
                 "Opponent": opponent,
@@ -87,7 +91,9 @@ with tab_entry:
                 "Position": Speler["Position"],
                 "Starter": starter,
                 "Minutes": mins,
-                "mins_aanwezig": mins_aanwezig
+                "mins_aanwezig": mins_aanwezig,
+                "Goals": goals, 
+                "Assist": assist,
             })
 
         # Submit Button inside the form
