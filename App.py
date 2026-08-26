@@ -73,9 +73,9 @@ with tab_entry:
             with c1:
                 st.write(f"**{Speler['Speler']}** ({Speler['Position']})")
             with c2:
-                starter = st.selectbox("Starter?", ["Yes", "No"], key=f"start_{Speler['Speler']}")
+                starter = st.selectbox("Basis?", ["Ja", "Nee"], key=f"start_{Speler['Speler']}")
             with c3:
-                mins = st.number_input("Minutes", min_value=0, max_value=120, value=0, key=f"min_{Speler['Speler']}")
+                mins = st.number_input("Minuten gespeeld", min_value=0, max_value=120, value=0, key=f"min_{Speler['Speler']}")
             with c4:
                 notes = st.text_input("Notes", key=f"note_{Speler['Speler']}")
             
