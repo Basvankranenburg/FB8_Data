@@ -164,7 +164,7 @@ with tab_dashboard:
             df["Goals_tegen"] = pd.to_numeric(df["Goals_tegen"], errors="coerce").fillna(0)
 
             # ---------------------------------------------------
-            # Calculation Logic
+            # Match Results & Team Metrics
             # ---------------------------------------------------
             match_summary = df.groupby(["Date", "Opponent"]).agg(
                 Goals_Voor=("Goals_voor", "first"),
@@ -184,13 +184,9 @@ with tab_dashboard:
             total_draws = (match_summary["Points"] == 1).sum()
             total_losses = (match_summary["Points"] == 0).sum()
 
-            # High-level KPIs
-           # kpi1, kpi2, kpi3 = st.columns(3)
-           # kpi1.metric("Total Matches Logged", df["Date"].nunique())
-           # kpi2.metric("Total Minutes Logged", int(df["Minutes"].sum()))
-           # kpi3.metric("Avg Minutes / Match", round(df.groupby("Date")["Minutes"].sum().mean(), 1))
-
-            # GroupBy Aggregation Syntax
+            # ---------------------------------------------------
+            # Player Aggregation Summary
+            # ---------------------------------------------------
             summary = df.groupby(["Speler", "Position"]).agg(
                 Matches_Played=("Minutes", lambda x: (x > 0).sum()),
                 Starts=("Starter", lambda x: (x == "Ja").sum()),
@@ -204,12 +200,45 @@ with tab_dashboard:
 
             summary = summary.sort_values(by="Minuten_aanwezig", ascending=False)
 
+            # ---------------------------------------------------
+            # Safe Top Scorer & Top Assist Calculations
+            # ---------------------------------------------------
+            if not summary.empty and summary["Goals"].sum() > 0:
+                top_scorer_row = summary.nlargest(1, "Goals").iloc[0]
+                top_scorer_name = top_scorer_row["Speler"]
+                top_goals_count = int(top_scorer_row["Goals"])
+            else:
+                top_scorer_name = "N/A"
+                top_goals_count = 0
+
+            if not summary.empty and summary["Assists"].sum() > 0:
+                top_assist_row = summary.nlargest(1, "Assists").iloc[0]
+                top_assist_name = top_assist_row["Speler"]
+                top_assists_count = int(top_assist_row["Assists"])
+            else:
+                top_assist_name = "N/A"
+                top_assists_count = 0
+
+            # ---------------------------------------------------
+            # Streamlit Visual Display
+            # ---------------------------------------------------
             st.subheader("Team statistieken")
-            metric_col1, metric_col2 = st.columns(2)
+            metric_col1, metric_col2, metric_col3 = st.columns(3)
+            
             metric_col1.metric(
                 label="Totale punten",
                 value=f"{int(total_points)} pts",
                 delta=f"W{total_wins} - G{total_draws} - V{total_losses}"
+            )
+            metric_col2.metric(
+                label="⚽ Topscorer",
+                value=top_scorer_name,
+                delta=f"{top_goals_count} goals"
+            )
+            metric_col3.metric(
+                label="🅰️ Meeste Assists",
+                value=top_assist_name,
+                delta=f"{top_assists_count} assists"
             )
 
             st.subheader("Speel data")
