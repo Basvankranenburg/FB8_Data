@@ -69,7 +69,7 @@ with tab_entry:
     with st.form("match_entry_form"):
         form_data = []
         for Speler in squad:
-            c1, c2, c3, c4, c5, c6 = st.columns([3, 2, 2, 4, 5, 6])
+            c1, c2, c3, c4, c5, c6 = st.columns([3, 2, 2, 4, 5, 1])
             with c1:
                 st.write(f"**{Speler['Speler']}** ({Speler['Position']})")
             with c2:
