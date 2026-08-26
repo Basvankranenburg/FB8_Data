@@ -141,7 +141,7 @@ with tab_dashboard:
         # High-level KPIs
         kpi1, kpi2, kpi3 = st.columns(3)
         kpi1.metric("Total Matches Logged", df["Date"].nunique())
-        kpi2.metric("Total Minutes Logged", int(df["Minutes"].sum()))
+        kpi2.metric("Total Minutes Logged", int(df["Goals"].sum()))
         kpi3.metric("Avg Minutes / Match", round(df.groupby("Date")["Minutes"].sum().mean(), 1))
 
         # Fixed GroupBy Aggregation Syntax and matched 'Ja' / 'Nee' check
@@ -158,7 +158,7 @@ with tab_dashboard:
 
         summary = summary.sort_values(by="Minuten_aanwezig", ascending=False)
 
-        st.subheader("Speler Summary Table")
+        st.subheader("Speler data")
         st.dataframe(summary.style.format({"Avg_Minutes": "{:.1f}"}), use_container_width=True)
 
         # Interactive Overlay Bar Chart
@@ -185,7 +185,7 @@ with tab_dashboard:
 
         fig.update_layout(
             barmode="overlay",
-            title="Speltijd vs. Totale Aanwezigheid per Speler",
+            title="Speeltijd vs. aanwezigheid per speler",
             xaxis_title="Speler",
             yaxis_title="Minuten",
             legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
