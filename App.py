@@ -185,10 +185,10 @@ with tab_dashboard:
             total_losses = (match_summary["Points"] == 0).sum()
 
             # High-level KPIs
-            kpi1, kpi2, kpi3 = st.columns(3)
-            kpi1.metric("Total Matches Logged", df["Date"].nunique())
-            kpi2.metric("Total Minutes Logged", int(df["Minutes"].sum()))
-            kpi3.metric("Avg Minutes / Match", round(df.groupby("Date")["Minutes"].sum().mean(), 1))
+           # kpi1, kpi2, kpi3 = st.columns(3)
+           # kpi1.metric("Total Matches Logged", df["Date"].nunique())
+           # kpi2.metric("Total Minutes Logged", int(df["Minutes"].sum()))
+           # kpi3.metric("Avg Minutes / Match", round(df.groupby("Date")["Minutes"].sum().mean(), 1))
 
             # GroupBy Aggregation Syntax
             summary = df.groupby(["Speler", "Position"]).agg(
@@ -212,6 +212,20 @@ with tab_dashboard:
                 delta=f"W{total_wins} - G{total_draws} - V{total_losses}"
             )
 
+            st.subheader("Speel data")
+            st.dataframe(
+                summary.style.format({
+                    "Matches_Played": "{:.0f}",
+                    "Starts": "{:.0f}",
+                    "Sub_Apps": "{:.0f}",
+                    "Total_Minutes": "{:.0f}",
+                    "Minuten_aanwezig": "{:.0f}",
+                    "Goals": "{:.0f}",
+                    "Assists": "{:.0f}",
+                    "Avg_Minutes": "{:.1f}"
+                }), 
+                use_container_width=True
+            )
 
             # Interactive Overlay Bar Chart
             fig = go.Figure()
