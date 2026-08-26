@@ -262,7 +262,8 @@ with tab_dashboard:
                     "Minuten_aanwezig": "{:.0f}",
                     "Goals": "{:.0f}",
                     "Assists": "{:.0f}",
-                    "Avg_Minutes": "{:.1f}"
+                    "Avg_Minutes": "{:.1f}",
+                    "total_goals_voor": "{:.1f}",
                 }), 
                 use_container_width=True
             )
